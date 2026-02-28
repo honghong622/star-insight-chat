@@ -10,7 +10,7 @@ const Index = () => {
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-toss-purple/10">
             <Moon className="h-5 w-5 text-toss-purple" />
           </div>
-          <span className="text-lg font-bold text-foreground">별자리</span>
+          <span className="text-lg font-bold text-foreground">올어바웃점성술</span>
         </div>
       </header>
 
@@ -26,8 +26,8 @@ const Index = () => {
             <span className="toss-gradient-text">말해주는 이야기</span>
           </h1>
           <p className="text-base leading-relaxed text-muted-foreground">
-            생년월일만 입력하면 AI가 분석한<br />
-            당신만의 운세를 무료로 확인해보세요 ✨
+            점성술에 모든것! 궁금했던 연애운, 재물운,<br />
+            건강운 등 무엇이든 물어보세요! 🔮✨
           </p>
         </div>
       </section>

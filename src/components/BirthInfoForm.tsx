@@ -6,14 +6,15 @@ const BirthInfoForm = () => {
   const navigate = useNavigate();
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
+  const [birthCity, setBirthCity] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
     if (!birthDate) return;
     setIsLoading(true);
-    // Store in sessionStorage for use across pages
     sessionStorage.setItem("birthDate", birthDate);
     sessionStorage.setItem("birthTime", birthTime);
+    sessionStorage.setItem("birthCity", birthCity);
     navigate("/reading");
   };
 
@@ -42,8 +43,21 @@ const BirthInfoForm = () => {
           className="w-full rounded-2xl border border-border bg-card px-4 py-4 text-base font-medium text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           placeholder="모르면 비워두세요"
         />
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-sm font-semibold text-foreground">
+          태어난 도시 <span className="text-muted-foreground font-normal">(선택)</span>
+        </label>
+        <input
+          type="text"
+          value={birthCity}
+          onChange={(e) => setBirthCity(e.target.value)}
+          className="w-full rounded-2xl border border-border bg-card px-4 py-4 text-base font-medium text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          placeholder="예: 서울, 부산"
+        />
         <p className="text-xs text-muted-foreground">
-          시간을 입력하면 더 정확한 운세를 받을 수 있어요
+          시간과 태어난 도시를 입력하면 더 정확한 운세를 받을 수 있어요
         </p>
       </div>
 

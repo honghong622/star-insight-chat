@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, birthDate, birthTime } = await req.json();
+    const { messages, birthDate, birthTime, birthCity } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -20,6 +20,7 @@ serve(async (req) => {
 사용자 정보:
 - 생년월일: ${birthDate}
 - 태어난 시간: ${birthTime || "알 수 없음"}
+- 태어난 도시: ${birthCity || "알 수 없음"}
 
 규칙:
 1. 친근하고 따뜻한 톤으로 대화하세요

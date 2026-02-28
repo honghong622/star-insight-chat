@@ -14,6 +14,7 @@ const ChatPage = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const birthDate = sessionStorage.getItem("birthDate") || "";
   const birthTime = sessionStorage.getItem("birthTime") || "";
+  const birthCity = sessionStorage.getItem("birthCity") || "";
 
   useEffect(() => {
     if (!birthDate) {
@@ -53,6 +54,7 @@ const ChatPage = () => {
           messages: newMessages,
           birthDate,
           birthTime,
+          birthCity,
         }),
       });
 
@@ -149,13 +151,13 @@ const ChatPage = () => {
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+                className={`max-w-[80%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground rounded-br-md"
                     : "bg-card text-foreground toss-shadow rounded-bl-md"
                 }`}
               >
-                {msg.content}
+                {msg.content.replace(/\*\*/g, "").replace(/\*/g, "")}
               </div>
             </div>
           ))}

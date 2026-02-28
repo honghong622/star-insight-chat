@@ -81,7 +81,7 @@ const ChatPage = () => {
 
           try {
             const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
             if (content) {
               assistantSoFar += content;
               setMessages((prev) => {

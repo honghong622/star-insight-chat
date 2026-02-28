@@ -12,8 +12,8 @@ serve(async (req) => {
 
   try {
     const { birthDate, birthTime, type } = await req.json();
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     let systemPrompt = "";
     let userPrompt = "";
@@ -23,42 +23,32 @@ serve(async (req) => {
 
 중요 규칙:
 1. 반드시 정확히 3줄로 답변하세요
-2. 첫 번째 줄: 사용자의 성격 중 가장 매력적이고 특별한 점을 짚어주세요 (누구나 "맞아!" 하고 느낄 만한 내용)
-3. 두 번째 줄: 현재 연애/인간관계에서 곧 일어날 변화를 암시하세요 (궁금증 유발)
+2. 첫 번째 줄: 사용자의 성격 중 가장 매력적이고 특별한 점을 짚어주세요
+3. 두 번째 줄: 현재 연애/인간관계에서 곧 일어날 변화를 암시하세요
 4. 세 번째 줄: "하지만 당신이 아직 모르는 것이 있습니다..."로 시작하는 강력한 클리프행어
 5. 모든 문장은 구체적이고 개인적으로 느껴져야 합니다
 6. 별자리 이모지를 자연스럽게 사용하세요
 7. 한국어로 답변하세요`;
 
-      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}
-
-이 사람의 별자리 운세를 3줄로 작성해주세요. 후킹이 강력해야 합니다.`;
+      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}\n\n이 사람의 별자리 운세를 3줄로 작성해주세요.`;
     } else {
-      systemPrompt = `당신은 따뜻하고 친근한 AI 점성술 전문가 '별이'입니다. 사용자와 대화하며 깊이 있는 점성술 상담을 제공합니다.
-
-규칙:
-1. 친근하고 따뜻한 톤으로 대화하세요
-2. 별자리, 행성 배치, 하우스 등 점성술 용어를 적절히 사용하세요
-3. 구체적이고 개인화된 조언을 제공하세요
-4. 연애, 재물, 건강, 커리어 등 다양한 주제를 다루세요
-5. 이모지를 적절히 사용하세요
-6. 한국어로 답변하세요
-7. 답변은 자연스럽고 대화체로 해주세요`;
-
-      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}`;
+      return new Response(JSON.stringify({ error: "Use astrology-chat for chat" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: systemPrompt + "\n\n" + userPrompt }] },
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
         ],
-        generationConfig: {
-          temperature: 0.9,
-          maxOutputTokens: 500,
-        },
       }),
     });
 
@@ -80,17 +70,10 @@ serve(async (req) => {
       });
     }
 
-    if (type === "free-reading") {
-      const data = await response.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      return new Response(JSON.stringify({ reading: content }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // For non-free-reading, return error since we only support free-reading in this function
-    return new Response(JSON.stringify({ error: "Use astrology-chat for chat" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || "";
+    return new Response(JSON.stringify({ reading: content }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("astrology error:", e);

@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { birthDate, birthTime, type } = await req.json();
+    const { birthDate, birthTime, birthCity, type } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -30,7 +30,7 @@ serve(async (req) => {
 6. 별자리 이모지를 자연스럽게 사용하세요
 7. 한국어로 답변하세요`;
 
-      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}\n\n이 사람의 별자리 운세를 3줄로 작성해주세요.`;
+      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}, 태어난 도시: ${birthCity || "모름"}\n\n이 사람의 별자리 운세를 3줄로 작성해주세요.`;
     } else {
       return new Response(JSON.stringify({ error: "Use astrology-chat for chat" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -10,6 +10,7 @@ const ReadingPage = () => {
   const [showPayment, setShowPayment] = useState(false);
   const birthDate = sessionStorage.getItem("birthDate") || "";
   const birthTime = sessionStorage.getItem("birthTime") || "";
+  const birthCity = sessionStorage.getItem("birthCity") || "";
 
   useEffect(() => {
     if (!birthDate) {
@@ -22,7 +23,7 @@ const ReadingPage = () => {
   const fetchReading = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("astrology", {
-        body: { birthDate, birthTime, type: "free-reading" },
+        body: { birthDate, birthTime, birthCity, type: "free-reading" },
       });
 
       if (error) throw error;
@@ -136,12 +137,12 @@ const ReadingPage = () => {
             className="animate-pulse-glow group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-toss-purple to-primary px-6 py-4 text-base font-bold text-primary-foreground transition-all active:scale-[0.98]"
           >
             <Sparkles className="h-5 w-5" />
-            1,980원으로 상세 운세 보기
+            2,980원으로 상세 운세 보기
             <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            1회 결제 · 환불 가능 · 안전한 결제
+            1회 결제 · 안전한 결제
           </p>
         </section>
       )}

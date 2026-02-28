@@ -43,9 +43,7 @@ const ReadingPage = () => {
   };
 
   const handlePayment = () => {
-    // Store payment state and go to chat
-    sessionStorage.setItem("paid", "true");
-    navigate("/chat");
+    navigate("/payment");
   };
 
   return (

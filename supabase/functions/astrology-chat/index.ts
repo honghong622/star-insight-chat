@@ -12,8 +12,6 @@ serve(async (req) => {
 
   try {
     const { messages, birthDate, birthTime, birthCity } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const systemPrompt = `당신은 따뜻하고 친근한 AI 점성술 전문가 '별이'입니다. 
 

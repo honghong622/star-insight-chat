@@ -12,8 +12,6 @@ serve(async (req) => {
 
   try {
     const { birthDate, birthTime, birthCity, type } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     let systemPrompt = "";
     let userPrompt = "";
@@ -69,7 +67,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "";
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     return new Response(JSON.stringify({ reading: content }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

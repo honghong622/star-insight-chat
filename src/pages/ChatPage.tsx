@@ -52,11 +52,8 @@ const ChatPage = () => {
   const sendMessage = async (text: string, isFirst = false, skipCount = false) => {
     if (!skipCount) {
       if (questionCount <= 0) {
-        // No questions left - prompt to buy more
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "질문 횟수를 모두 사용하셨어요! 추가 질문을 충전해주세요 🙏" },
-        ]);
+        // Auto navigate to additional payment
+        navigate("/payment");
         return;
       }
       const newCount = questionCount - 1;

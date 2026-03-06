@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Moon, ArrowLeft, Plus } from "lucide-react";
+import { Send, Moon, ArrowLeft } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -45,6 +45,14 @@ const ChatPage = () => {
     sendMessage("안녕하세요! 제 운세를 알려주세요.", true, true);
   }, []);
 
+  // Auto-redirect to payment when questions run out (after conversation started)
+  useEffect(() => {
+    if (questionCount <= 0 && messages.length > 0 && !isLoading) {
+      const timer = setTimeout(() => navigate("/payment"), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [questionCount, messages.length, isLoading]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,11 +60,8 @@ const ChatPage = () => {
   const sendMessage = async (text: string, isFirst = false, skipCount = false) => {
     if (!skipCount) {
       if (questionCount <= 0) {
-        // No questions left - prompt to buy more
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "질문 횟수를 모두 사용하셨어요! 추가 질문을 충전해주세요 🙏" },
-        ]);
+        // Auto navigate to additional payment
+        navigate("/payment");
         return;
       }
       const newCount = questionCount - 1;
@@ -262,18 +267,11 @@ const ChatPage = () => {
             </div>
           )}
 
-          {/* No questions left */}
+          {/* No questions left - show redirect prompt */}
           {questionCount <= 0 && !isLoading && (
             <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-5 text-center toss-shadow">
               <p className="text-sm font-bold text-foreground">질문을 모두 사용했어요</p>
-              <p className="mt-1 text-xs text-muted-foreground">추가 질문을 충전하고 계속 대화하세요</p>
-              <button
-                onClick={handleBuyMore}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all active:scale-95"
-              >
-                <Plus className="h-4 w-4" />
-                1,980원으로 15회 충전
-              </button>
+              <p className="mt-1 text-xs text-muted-foreground">추가 결제 페이지로 이동합니다...</p>
             </div>
           )}
 

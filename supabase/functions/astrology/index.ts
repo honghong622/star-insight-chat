@@ -13,11 +13,13 @@ serve(async (req) => {
   try {
     const { birthDate, birthTime, birthCity, type } = await req.json();
 
-    let systemPrompt = "";
-    let userPrompt = "";
+    if (type !== "free-reading") {
+      return new Response(JSON.stringify({ error: "Use astrology-chat for chat" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    if (type === "free-reading") {
-      systemPrompt = `당신은 세계적으로 유명한 점성술 전문가입니다. 사용자의 생년월일과 태어난 시간을 기반으로 별자리, 행성 배치를 분석합니다.
+    const systemPrompt = `당신은 세계적으로 유명한 점성술 전문가입니다. 사용자의 생년월일과 태어난 시간을 기반으로 별자리, 행성 배치를 분석합니다.
 
 중요 규칙:
 1. 반드시 정확히 3줄로 답변하세요
@@ -28,22 +30,22 @@ serve(async (req) => {
 6. 별자리 이모지를 자연스럽게 사용하세요
 7. 한국어로 답변하세요`;
 
-      userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}, 태어난 도시: ${birthCity || "모름"}\n\n이 사람의 별자리 운세를 3줄로 작성해주세요.`;
-    } else {
-      return new Response(JSON.stringify({ error: "Use astrology-chat for chat" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const userPrompt = `생년월일: ${birthDate}, 태어난 시간: ${birthTime || "모름"}, 태어난 도시: ${birthCity || "모름"}\n\n이 사람의 별자리 운세를 3줄로 작성해주세요.`;
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: systemPrompt + "\n\n" + userPrompt }] },
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
         ],
       }),
     });
@@ -67,7 +69,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const content = data.choices?.[0]?.message?.content || "";
     return new Response(JSON.stringify({ reading: content }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

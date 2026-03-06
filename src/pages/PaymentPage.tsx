@@ -26,7 +26,7 @@ const PaymentPage = () => {
       setIsProcessing(false);
       setIsComplete(true);
       sessionStorage.setItem("paid", "true");
-      // Add 15 questions
+      sessionStorage.setItem("purchaseCount", String(purchaseCount + 1));
       const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
       sessionStorage.setItem("questionCount", String(currentCount + 15));
       setTimeout(() => navigate("/chat"), 1500);

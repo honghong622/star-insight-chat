@@ -259,18 +259,11 @@ const ChatPage = () => {
             </div>
           )}
 
-          {/* No questions left */}
+          {/* No questions left - show redirect prompt */}
           {questionCount <= 0 && !isLoading && (
             <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-5 text-center toss-shadow">
               <p className="text-sm font-bold text-foreground">질문을 모두 사용했어요</p>
-              <p className="mt-1 text-xs text-muted-foreground">추가 질문을 충전하고 계속 대화하세요</p>
-              <button
-                onClick={handleBuyMore}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all active:scale-95"
-              >
-                <Plus className="h-4 w-4" />
-                1,980원으로 15회 충전
-              </button>
+              <p className="mt-1 text-xs text-muted-foreground">추가 결제 페이지로 이동합니다...</p>
             </div>
           )}
 

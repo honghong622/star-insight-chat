@@ -45,6 +45,14 @@ const ChatPage = () => {
     sendMessage("안녕하세요! 제 운세를 알려주세요.", true, true);
   }, []);
 
+  // Auto-redirect to payment when questions run out (after conversation started)
+  useEffect(() => {
+    if (questionCount <= 0 && messages.length > 0 && !isLoading) {
+      const timer = setTimeout(() => navigate("/payment"), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [questionCount, messages.length, isLoading]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);

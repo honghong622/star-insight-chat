@@ -1,16 +1,36 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Moon, ArrowLeft } from "lucide-react";
+import { Send, Moon, ArrowLeft, Plus } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/astrology-chat`;
+
+const CATEGORIES = [
+  { label: "연애", emoji: "💕" },
+  { label: "재물", emoji: "💰" },
+  { label: "진로/사업", emoji: "🚀" },
+  { label: "궁합", emoji: "💑" },
+  { label: "건강", emoji: "💪" },
+];
+
+const SUGGESTIONS = [
+  "내 연애스타일은?",
+  "내 숨겨진 매력은?",
+  "올해 재물운은?",
+  "올해 연애운은?",
+  "재회 가능성은?",
+];
 
 const ChatPage = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [questionCount, setQuestionCount] = useState(() => {
+    return parseInt(sessionStorage.getItem("questionCount") || "0", 10);
+  });
   const bottomRef = useRef<HTMLDivElement>(null);
   const birthDate = sessionStorage.getItem("birthDate") || "";
   const birthTime = sessionStorage.getItem("birthTime") || "";
@@ -22,17 +42,31 @@ const ChatPage = () => {
       return;
     }
     // Auto send first message
-    sendMessage("안녕하세요! 제 운세를 알려주세요.", true);
+    sendMessage("안녕하세요! 제 운세를 알려주세요.", true, true);
   }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async (text: string, isFirst = false) => {
+  const sendMessage = async (text: string, isFirst = false, skipCount = false) => {
+    if (!skipCount) {
+      if (questionCount <= 0) {
+        // No questions left - prompt to buy more
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "질문 횟수를 모두 사용하셨어요! 추가 질문을 충전해주세요 🙏" },
+        ]);
+        return;
+      }
+      const newCount = questionCount - 1;
+      setQuestionCount(newCount);
+      sessionStorage.setItem("questionCount", String(newCount));
+    }
+
     const userMsg: Msg = { role: "user", content: text };
     const newMessages = isFirst ? [userMsg] : [...messages, userMsg];
-    
+
     if (!isFirst) {
       setMessages((prev) => [...prev, userMsg]);
     } else {
@@ -40,6 +74,7 @@ const ChatPage = () => {
     }
     setInput("");
     setIsLoading(true);
+    setShowCategories(false);
 
     let assistantSoFar = "";
 
@@ -83,7 +118,6 @@ const ChatPage = () => {
 
           try {
             const parsed = JSON.parse(jsonStr);
-            // Gemini streaming format
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantSoFar += content;
@@ -103,8 +137,19 @@ const ChatPage = () => {
           }
         }
       }
+
+      // Show categories after first response
+      if (isFirst) {
+        setShowCategories(true);
+      }
     } catch (e) {
       console.error(e);
+      // Refund the question on error
+      if (!skipCount) {
+        const refunded = questionCount;
+        setQuestionCount(refunded);
+        sessionStorage.setItem("questionCount", String(refunded));
+      }
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "죄송해요, 잠시 문제가 생겼어요. 다시 시도해주세요 🙏" },
@@ -120,20 +165,41 @@ const ChatPage = () => {
     sendMessage(input.trim());
   };
 
+  const handleCategoryClick = (category: string) => {
+    sendMessage(`${category}운에 대해 자세히 알려주세요`);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    sendMessage(suggestion);
+  };
+
+  const handleBuyMore = () => {
+    navigate("/payment");
+  };
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center gap-3 border-b border-border px-4 pb-3 pt-14">
-        <button onClick={() => navigate("/")} className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-toss-purple/10">
-            <Moon className="h-4 w-4 text-toss-purple" />
+      <header className="flex items-center justify-between border-b border-border px-4 pb-3 pt-14">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate("/")} className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-toss-purple/10">
+              <Moon className="h-4 w-4 text-toss-purple" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-foreground">별이</p>
+              <p className="text-xs text-muted-foreground">점성술 연구소</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-foreground">별이</p>
-            <p className="text-xs text-muted-foreground">AI 점성술 전문가</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="rounded-full bg-toss-purple/10 px-3 py-1.5">
+            <span className="text-xs font-bold text-toss-purple">
+              남은 질문 {questionCount}개
+            </span>
           </div>
         </div>
       </header>
@@ -162,6 +228,55 @@ const ChatPage = () => {
               </div>
             </div>
           ))}
+
+          {/* Category buttons after first AI response */}
+          {showCategories && !isLoading && (
+            <div className="flex flex-wrap gap-2 pl-9">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.label}
+                  onClick={() => handleCategoryClick(cat.label)}
+                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-primary/5 active:scale-95"
+                >
+                  {cat.emoji} {cat.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Suggestion buttons (shown after non-first messages) */}
+          {!showCategories && !isLoading && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
+            <div className="space-y-2 pl-9">
+              <p className="text-xs font-semibold text-muted-foreground">💡 이런 것도 물어보세요</p>
+              <div className="flex flex-wrap gap-2">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => handleSuggestionClick(s)}
+                    className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-primary hover:bg-primary/5 active:scale-95"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* No questions left */}
+          {questionCount <= 0 && !isLoading && (
+            <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-5 text-center toss-shadow">
+              <p className="text-sm font-bold text-foreground">질문을 모두 사용했어요</p>
+              <p className="mt-1 text-xs text-muted-foreground">추가 질문을 충전하고 계속 대화하세요</p>
+              <button
+                onClick={handleBuyMore}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all active:scale-95"
+              >
+                <Plus className="h-4 w-4" />
+                1,980원으로 15회 충전
+              </button>
+            </div>
+          )}
+
           {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="flex justify-start">
               <div className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-toss-purple/10">
@@ -189,13 +304,13 @@ const ChatPage = () => {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="궁금한 것을 물어보세요..."
+            placeholder={questionCount > 0 ? "궁금한 것을 물어보세요..." : "질문을 충전해주세요"}
             className="flex-1 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
-            disabled={isLoading}
+            disabled={isLoading || questionCount <= 0}
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || questionCount <= 0}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
           >
             <Send className="h-4 w-4" />

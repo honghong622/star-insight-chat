@@ -126,7 +126,7 @@ const ReadingPage = () => {
               AI 점성술 전문가와 1:1 대화
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              연애, 재물, 건강, 커리어까지 상세하게
+              연애, 재물, 건강, 커리어까지 · 질문 15회
             </p>
           </div>
           
@@ -140,7 +140,7 @@ const ReadingPage = () => {
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            1회 결제 · 안전한 결제
+            첫 결제 2,980원 · 질문 15회 · 안전한 결제
           </p>
         </section>
       )}

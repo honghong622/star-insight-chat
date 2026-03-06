@@ -11,6 +11,9 @@ const PaymentPage = () => {
   const [isComplete, setIsComplete] = useState(false);
 
   const birthDate = sessionStorage.getItem("birthDate") || "";
+  const isAdditional = sessionStorage.getItem("paid") === "true";
+  const price = isAdditional ? 1980 : 2980;
+  const priceLabel = isAdditional ? "1,980원" : "2,980원";
 
   if (!birthDate) {
     navigate("/");
@@ -19,11 +22,13 @@ const PaymentPage = () => {
 
   const handlePayment = () => {
     setIsProcessing(true);
-    // 결제 처리 시뮬레이션
     setTimeout(() => {
       setIsProcessing(false);
       setIsComplete(true);
       sessionStorage.setItem("paid", "true");
+      // Add 15 questions
+      const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
+      sessionStorage.setItem("questionCount", String(currentCount + 15));
       setTimeout(() => navigate("/chat"), 1500);
     }, 2000);
   };
@@ -35,7 +40,7 @@ const PaymentPage = () => {
           <Check className="h-10 w-10 text-primary" />
         </div>
         <p className="mt-6 text-xl font-bold text-foreground">결제가 완료되었어요</p>
-        <p className="mt-2 text-sm text-muted-foreground">AI 점성술 전문가와 대화를 시작합니다...</p>
+        <p className="mt-2 text-sm text-muted-foreground">질문 15회가 충전되었습니다 ✨</p>
       </div>
     );
   }
@@ -66,10 +71,12 @@ const PaymentPage = () => {
             <span className="text-2xl">🔮</span>
           </div>
           <div className="flex-1">
-            <p className="text-base font-bold text-foreground">AI 점성술 상세 운세</p>
-            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 무제한 질문</p>
+            <p className="text-base font-bold text-foreground">
+              {isAdditional ? "추가 질문 충전" : "AI 점성술 상세 운세"}
+            </p>
+            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 질문 15회</p>
           </div>
-          <p className="text-lg font-extrabold text-foreground">2,980원</p>
+          <p className="text-lg font-extrabold text-foreground">{priceLabel}</p>
         </div>
       </section>
 
@@ -129,7 +136,7 @@ const PaymentPage = () => {
       <section className="border-t border-border bg-background px-5 pb-10 pt-4">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-sm text-muted-foreground">총 결제 금액</span>
-          <span className="text-lg font-extrabold text-foreground">2,980원</span>
+          <span className="text-lg font-extrabold text-foreground">{priceLabel}</span>
         </div>
         <button
           onClick={handlePayment}
@@ -139,7 +146,7 @@ const PaymentPage = () => {
           {isProcessing ? (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
           ) : (
-            "2,980원 결제하기"
+            `${priceLabel} 결제하기`
           )}
         </button>
       </section>

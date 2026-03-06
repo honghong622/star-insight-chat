@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Send, Moon, ArrowLeft, Plus } from "lucide-react";
+import { Send, Moon, ArrowLeft } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 

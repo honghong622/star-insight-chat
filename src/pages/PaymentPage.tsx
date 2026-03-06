@@ -11,8 +11,8 @@ const PaymentPage = () => {
   const [isComplete, setIsComplete] = useState(false);
 
   const birthDate = sessionStorage.getItem("birthDate") || "";
-  const isAdditional = sessionStorage.getItem("paid") === "true";
-  const price = isAdditional ? 1980 : 2980;
+  const purchaseCount = parseInt(sessionStorage.getItem("purchaseCount") || "0", 10);
+  const isAdditional = purchaseCount > 0;
   const priceLabel = isAdditional ? "1,980원" : "2,980원";
 
   if (!birthDate) {

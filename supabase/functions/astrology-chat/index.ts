@@ -12,8 +12,6 @@ serve(async (req) => {
 
   try {
     const { messages, birthDate, birthTime, birthCity } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const systemPrompt = `당신은 따뜻하고 친근한 AI 점성술 전문가 '별이'입니다. 
 
@@ -32,20 +30,24 @@ serve(async (req) => {
 7. 답변은 자연스럽고 대화체로, 2-4문장 정도로 해주세요
 8. 첫 메시지라면 반갑게 인사하고 무엇이 궁금한지 물어보세요`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
+
+    // Convert messages to Gemini format
+    const geminiContents = [];
+    geminiContents.push({ role: "user", parts: [{ text: systemPrompt }] });
+    geminiContents.push({ role: "model", parts: [{ text: "네, 알겠습니다! 별이로서 따뜻하게 상담해드리겠습니다. ✨" }] });
+    for (const msg of messages) {
+      geminiContents.push({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }],
+      });
+    }
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-        stream: true,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: geminiContents }),
     });
 
     if (!response.ok) {

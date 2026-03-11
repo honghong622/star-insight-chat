@@ -78,6 +78,9 @@ const ChatPage = () => {
     let assistantSoFar = "";
 
     try {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
@@ -89,6 +92,7 @@ const ChatPage = () => {
           birthDate,
           birthTime,
           birthCity,
+          todayDate: todayStr,
         }),
       });
 

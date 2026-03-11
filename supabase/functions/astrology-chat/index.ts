@@ -13,7 +13,7 @@ serve(async (req) => {
   try {
     const { messages, birthDate, birthTime, birthCity } = await req.json();
 
-    const systemPrompt = `당신은 따뜻하고 친근한 AI 점성술 전문가 '별이'입니다. 점성술 연구소의 전문 상담사입니다.
+    const systemPrompt = `당신은 따뜻하고 친근한 AI 점성술 전문가 '달빛'입니다. 점성술 연구소의 전문 상담사입니다.
 
 사용자 정보:
 - 생년월일: ${birthDate}

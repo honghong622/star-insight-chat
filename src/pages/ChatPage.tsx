@@ -28,6 +28,7 @@ const ChatPage = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(() => {
     return parseInt(sessionStorage.getItem("questionCount") || "0", 10);
   });

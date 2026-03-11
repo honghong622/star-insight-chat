@@ -26,13 +26,13 @@ const PaymentPage = () => {
       setIsProcessing(false);
       setIsComplete(true);
       if (!isAdditional) {
-        // 첫 결제: 정확히 15개로 설정
+        // 첫 결제: 정확히 10개로 설정
         sessionStorage.setItem("paid", "true");
-        sessionStorage.setItem("questionCount", "15");
+        sessionStorage.setItem("questionCount", "10");
       } else {
-        // 추가 결제: 기존 + 15
+        // 추가 결제: 기존 + 10
         const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
-        sessionStorage.setItem("questionCount", String(currentCount + 15));
+        sessionStorage.setItem("questionCount", String(currentCount + 10));
       }
       setTimeout(() => navigate("/chat"), 1500);
     }, 2000);

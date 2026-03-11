@@ -26,13 +26,13 @@ const PaymentPage = () => {
       setIsProcessing(false);
       setIsComplete(true);
       if (!isAdditional) {
-        // 첫 결제: 정확히 15개로 설정
+        // 첫 결제: 정확히 10개로 설정
         sessionStorage.setItem("paid", "true");
-        sessionStorage.setItem("questionCount", "15");
+        sessionStorage.setItem("questionCount", "10");
       } else {
-        // 추가 결제: 기존 + 15
+        // 추가 결제: 기존 + 10
         const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
-        sessionStorage.setItem("questionCount", String(currentCount + 15));
+        sessionStorage.setItem("questionCount", String(currentCount + 10));
       }
       setTimeout(() => navigate("/chat"), 1500);
     }, 2000);
@@ -45,7 +45,7 @@ const PaymentPage = () => {
           <Check className="h-10 w-10 text-primary" />
         </div>
         <p className="mt-6 text-xl font-bold text-foreground">결제가 완료되었어요</p>
-        <p className="mt-2 text-sm text-muted-foreground">질문 15회가 충전되었습니다 ✨</p>
+        <p className="mt-2 text-sm text-muted-foreground">질문 10회가 충전되었습니다 ✨</p>
       </div>
     );
   }
@@ -79,7 +79,7 @@ const PaymentPage = () => {
             <p className="text-base font-bold text-foreground">
               {isAdditional ? "추가 질문 충전" : "AI 점성술 상세 운세"}
             </p>
-            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 질문 15회</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 질문 10회</p>
           </div>
           <p className="text-lg font-extrabold text-foreground">{priceLabel}</p>
         </div>

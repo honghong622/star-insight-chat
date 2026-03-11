@@ -200,7 +200,7 @@ const ChatPage = () => {
               <Moon className="h-4 w-4 text-toss-purple" />
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">달빛</p>
+              <p className="text-sm font-bold text-foreground">달</p>
               <p className="text-xs text-muted-foreground">점성술 연구소</p>
             </div>
           </div>

@@ -14,13 +14,13 @@ const CATEGORIES = [
   { label: "건강", emoji: "💪" },
 ];
 
-const SUGGESTIONS = [
-  "내 연애스타일은?",
-  "내 숨겨진 매력은?",
-  "올해 재물운은?",
-  "올해 연애운은?",
-  "재회 가능성은?",
-];
+const parseSuggestions = (text: string): { clean: string; suggestions: string[] } => {
+  const match = text.match(/\[SUGGESTIONS\](.*?)\[\/SUGGESTIONS\]/s);
+  if (!match) return { clean: text, suggestions: [] };
+  const clean = text.replace(/\[SUGGESTIONS\].*?\[\/SUGGESTIONS\]/s, "").trimEnd();
+  const suggestions = match[1].split("|").map(s => s.trim()).filter(Boolean);
+  return { clean, suggestions };
+};
 
 const ChatPage = () => {
   const navigate = useNavigate();

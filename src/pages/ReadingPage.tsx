@@ -93,7 +93,7 @@ const ReadingPage = () => {
                     <span className="text-xs font-bold text-toss-purple">{i + 1}</span>
                   </div>
                   <span className="text-xs font-semibold text-muted-foreground">
-                    {["성격 분석", "관계 변화", "숨겨진 운명"][i]}
+                    {["성격 분석", "관계 변화", "지금 놓치면 안 될 운명"][i]}
                   </span>
                 </div>
                 <p className="text-[15px] font-medium leading-relaxed text-foreground">

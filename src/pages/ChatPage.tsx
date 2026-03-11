@@ -281,7 +281,7 @@ const ChatPage = () => {
           {/* No questions left - show recharge prompt */}
           {questionCount <= 0 && !isLoading && messages.length > 1 && (
             <div className="mx-auto max-w-sm rounded-2xl border border-border bg-card p-5 text-center toss-shadow">
-              <p className="text-sm font-bold text-foreground">질문 15회가 다 소진되었어요!</p>
+              <p className="text-sm font-bold text-foreground">질문 10회가 다 소진되었어요!</p>
               <p className="mt-2 text-xs text-muted-foreground">추가로 궁금하신 게 있으시다면<br />아래 버튼을 눌러주세요 ✨</p>
               <button
                 onClick={() => navigate("/payment")}

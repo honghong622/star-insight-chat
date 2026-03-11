@@ -144,6 +144,17 @@ const ChatPage = () => {
         }
       }
 
+      // Parse suggestions from the final response
+      const { clean, suggestions } = parseSuggestions(assistantSoFar);
+      if (clean !== assistantSoFar) {
+        setMessages((prev) =>
+          prev.map((m, i) =>
+            i === prev.length - 1 && m.role === "assistant" ? { ...m, content: clean } : m
+          )
+        );
+      }
+      setDynamicSuggestions(suggestions);
+
       // Show categories after first response
       if (isFirst) {
         setShowCategories(true);

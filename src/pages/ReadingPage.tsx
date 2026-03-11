@@ -43,6 +43,8 @@ const ReadingPage = () => {
   };
 
   const handlePayment = () => {
+    // 첫 결제 플로우이므로 paid 플래그 초기화
+    sessionStorage.removeItem("paid");
     navigate("/payment");
   };
 

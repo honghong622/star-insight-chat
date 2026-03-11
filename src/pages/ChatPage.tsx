@@ -120,14 +120,16 @@ const ChatPage = () => {
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) {
               assistantSoFar += content;
+              // Strip [SUGGESTIONS]...[/SUGGESTIONS] from displayed text in real-time
+              const displayText = assistantSoFar.replace(/\[SUGGESTIONS\].*?\[\/SUGGESTIONS\]/gs, "").replace(/\[SUGGESTIONS\].*/s, "").trimEnd();
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
                 if (last?.role === "assistant") {
                   return prev.map((m, i) =>
-                    i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
+                    i === prev.length - 1 ? { ...m, content: displayText } : m
                   );
                 }
-                return [...prev, { role: "assistant", content: assistantSoFar }];
+                return [...prev, { role: "assistant", content: displayText }];
               });
             }
           } catch {

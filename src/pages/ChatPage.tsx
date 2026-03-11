@@ -24,7 +24,10 @@ const parseSuggestions = (text: string): { clean: string; suggestions: string[] 
 
 const ChatPage = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(() => {
+    const saved = sessionStorage.getItem("chatMessages");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
@@ -37,13 +40,22 @@ const ChatPage = () => {
   const birthTime = sessionStorage.getItem("birthTime") || "";
   const birthCity = sessionStorage.getItem("birthCity") || "";
 
+  // Persist messages to sessionStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      sessionStorage.setItem("chatMessages", JSON.stringify(messages));
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (!birthDate) {
       navigate("/");
       return;
     }
-    // Auto send first message
-    sendMessage("안녕하세요! 제 운세를 알려주세요.", true, true);
+    // Only send initial greeting if no existing conversation
+    if (messages.length === 0) {
+      sendMessage("안녕하세요! 제 운세를 알려주세요.", true, true);
+    }
   }, []);
 
 

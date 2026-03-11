@@ -129,7 +129,7 @@ const ReadingPage = () => {
               AI 점성술 전문가와 1:1 대화
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              연애, 재물, 건강, 커리어까지 · 질문 15회
+              연애, 재물, 건강, 커리어까지 · 질문 10회
             </p>
           </div>
           

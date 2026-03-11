@@ -24,7 +24,10 @@ const parseSuggestions = (text: string): { clean: string; suggestions: string[] 
 
 const ChatPage = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(() => {
+    const saved = sessionStorage.getItem("chatMessages");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCategories, setShowCategories] = useState(false);

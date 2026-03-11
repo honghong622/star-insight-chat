@@ -261,12 +261,12 @@ const ChatPage = () => {
             </div>
           )}
 
-          {/* Suggestion buttons (shown after non-first messages) */}
-          {!showCategories && !isLoading && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
+          {/* Dynamic suggestion buttons */}
+          {!showCategories && !isLoading && dynamicSuggestions.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
             <div className="space-y-2 pl-9">
               <p className="text-xs font-semibold text-muted-foreground">💡 이런 것도 물어보세요</p>
               <div className="flex flex-wrap gap-2">
-                {SUGGESTIONS.map((s) => (
+                {dynamicSuggestions.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleSuggestionClick(s)}

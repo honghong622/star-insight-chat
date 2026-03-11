@@ -109,10 +109,11 @@ const ReadingPage = () => {
           <div className="animate-fade-up mt-6 relative overflow-hidden rounded-2xl bg-card p-5 toss-shadow" style={{ animationDelay: "1.2s", opacity: 0 }}>
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
               <Lock className="mb-2 h-6 w-6 text-toss-purple" />
-              <p className="text-sm font-bold text-foreground">더 자세한 운세가 궁금하다면?</p>
+              <p className="text-sm font-bold text-foreground">지금 이 순간, 당신에게 다가오는 기회가 있어요</p>
+              <p className="mt-1 text-xs text-muted-foreground">이걸 모르고 지나치면 후회할 수도 있어요</p>
             </div>
             <p className="text-sm text-muted-foreground blur-sm">
-              올해 하반기 재물운이 크게 상승하는 시기가 있으며, 특히 금성이...
+              올해 하반기 당신의 인생을 바꿀 결정적 전환점이 찾아옵니다. 특히 금성과 목성의 합이...
             </p>
           </div>
         )}

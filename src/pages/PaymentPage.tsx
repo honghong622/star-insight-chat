@@ -79,7 +79,7 @@ const PaymentPage = () => {
             <p className="text-base font-bold text-foreground">
               {isAdditional ? "추가 질문 충전" : "AI 점성술 상세 운세"}
             </p>
-            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 질문 15회</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">1:1 채팅 · 질문 10회</p>
           </div>
           <p className="text-lg font-extrabold text-foreground">{priceLabel}</p>
         </div>

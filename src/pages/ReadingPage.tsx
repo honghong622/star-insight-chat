@@ -143,7 +143,7 @@ const ReadingPage = () => {
           </button>
 
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            첫 결제 2,980원 · 질문 15회 · 안전한 결제
+            첫 결제 2,980원 · 질문 10회 · 안전한 결제
           </p>
         </section>
       )}

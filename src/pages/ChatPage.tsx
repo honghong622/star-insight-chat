@@ -287,7 +287,7 @@ const ChatPage = () => {
                 onClick={() => navigate("/payment")}
                 className="mt-4 w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all active:scale-[0.98]"
               >
-                1,980원으로 15회 추가질문 결제하기
+                1,980원으로 10회 추가질문 결제하기
               </button>
             </div>
           )}

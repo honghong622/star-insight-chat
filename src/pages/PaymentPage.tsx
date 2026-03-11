@@ -45,7 +45,7 @@ const PaymentPage = () => {
           <Check className="h-10 w-10 text-primary" />
         </div>
         <p className="mt-6 text-xl font-bold text-foreground">결제가 완료되었어요</p>
-        <p className="mt-2 text-sm text-muted-foreground">질문 15회가 충전되었습니다 ✨</p>
+        <p className="mt-2 text-sm text-muted-foreground">질문 10회가 충전되었습니다 ✨</p>
       </div>
     );
   }

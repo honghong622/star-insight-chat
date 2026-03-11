@@ -11,8 +11,8 @@ const PaymentPage = () => {
   const [isComplete, setIsComplete] = useState(false);
 
   const birthDate = sessionStorage.getItem("birthDate") || "";
-  const purchaseCount = parseInt(sessionStorage.getItem("purchaseCount") || "0", 10);
-  const isAdditional = purchaseCount > 0;
+  const hasPaid = sessionStorage.getItem("paid") === "true";
+  const isAdditional = hasPaid;
   const priceLabel = isAdditional ? "1,980원" : "2,980원";
 
   if (!birthDate) {
@@ -26,7 +26,6 @@ const PaymentPage = () => {
       setIsProcessing(false);
       setIsComplete(true);
       sessionStorage.setItem("paid", "true");
-      sessionStorage.setItem("purchaseCount", String(purchaseCount + 1));
       const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
       sessionStorage.setItem("questionCount", String(currentCount + 15));
       setTimeout(() => navigate("/chat"), 1500);

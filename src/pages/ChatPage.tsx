@@ -14,13 +14,13 @@ const CATEGORIES = [
   { label: "건강", emoji: "💪" },
 ];
 
-const SUGGESTIONS = [
-  "내 연애스타일은?",
-  "내 숨겨진 매력은?",
-  "올해 재물운은?",
-  "올해 연애운은?",
-  "재회 가능성은?",
-];
+const parseSuggestions = (text: string): { clean: string; suggestions: string[] } => {
+  const match = text.match(/\[SUGGESTIONS\](.*?)\[\/SUGGESTIONS\]/s);
+  if (!match) return { clean: text, suggestions: [] };
+  const clean = text.replace(/\[SUGGESTIONS\].*?\[\/SUGGESTIONS\]/s, "").trimEnd();
+  const suggestions = match[1].split("|").map(s => s.trim()).filter(Boolean);
+  return { clean, suggestions };
+};
 
 const ChatPage = () => {
   const navigate = useNavigate();
@@ -28,6 +28,7 @@ const ChatPage = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [questionCount, setQuestionCount] = useState(() => {
     return parseInt(sessionStorage.getItem("questionCount") || "0", 10);
   });
@@ -143,6 +144,17 @@ const ChatPage = () => {
         }
       }
 
+      // Parse suggestions from the final response
+      const { clean, suggestions } = parseSuggestions(assistantSoFar);
+      if (clean !== assistantSoFar) {
+        setMessages((prev) =>
+          prev.map((m, i) =>
+            i === prev.length - 1 && m.role === "assistant" ? { ...m, content: clean } : m
+          )
+        );
+      }
+      setDynamicSuggestions(suggestions);
+
       // Show categories after first response
       if (isFirst) {
         setShowCategories(true);
@@ -249,12 +261,12 @@ const ChatPage = () => {
             </div>
           )}
 
-          {/* Suggestion buttons (shown after non-first messages) */}
-          {!showCategories && !isLoading && messages.length > 2 && messages[messages.length - 1]?.role === "assistant" && (
+          {/* Dynamic suggestion buttons */}
+          {!showCategories && !isLoading && dynamicSuggestions.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
             <div className="space-y-2 pl-9">
               <p className="text-xs font-semibold text-muted-foreground">💡 이런 것도 물어보세요</p>
               <div className="flex flex-wrap gap-2">
-                {SUGGESTIONS.map((s) => (
+                {dynamicSuggestions.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleSuggestionClick(s)}

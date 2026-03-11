@@ -28,7 +28,10 @@ serve(async (req) => {
 5. 연애, 재물, 건강, 커리어, 궁합 등 다양한 주제를 다루세요.
 6. 이모지를 자연스럽게 사용하세요.
 7. 한국어로 답변하세요.
-8. 첫 메시지라면 반갑게 인사하고 무엇이 궁금한지 물어보세요.`;
+8. 첫 메시지라면 반갑게 인사하고 무엇이 궁금한지 물어보세요.
+9. 매 답변의 맨 마지막에 반드시 아래 형식으로 후속 추천 질문 3개를 추가하세요. 사용자의 질문과 직접 관련된, 더 깊이 파고들 수 있는 질문이어야 합니다:
+[SUGGESTIONS]추천질문1|추천질문2|추천질문3[/SUGGESTIONS]
+예시: [SUGGESTIONS]올해 하반기 연애운은?|나와 잘 맞는 별자리는?|짝사랑 고백 타이밍은?[/SUGGESTIONS]`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

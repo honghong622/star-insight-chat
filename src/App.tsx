@@ -8,6 +8,7 @@ import ReadingPage from "./pages/ReadingPage";
 import PaymentPage from "./pages/PaymentPage";
 import ChatPage from "./pages/ChatPage";
 import NotFound from "./pages/NotFound";
+import TermsPage from "./pages/TermsPage";
 
 const queryClient = new QueryClient();
 

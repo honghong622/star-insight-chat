@@ -6,6 +6,21 @@ const PRODUCT_ID = "ait.0000021328.2e24dd8e.5d5d5e9a16.3407433704";
 
 type PayMethod = "card" | "phone" | "transfer";
 
+declare global {
+  interface Window {
+    TossApp?: {
+      requestPayment: (params: {
+        productId: string;
+        amount: number;
+        orderId: string;
+        orderName: string;
+      }) => Promise<{ status: string }>;
+    };
+  }
+}
+
+const isTossApp = () => !!window.TossApp;
+
 const PaymentPage = () => {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<PayMethod>("card");
@@ -22,22 +37,45 @@ const PaymentPage = () => {
     return null;
   }
 
-  const handlePayment = () => {
+  const priceAmount = isAdditional ? 1980 : 2980;
+
+  const onPaymentSuccess = () => {
+    setIsProcessing(false);
+    setIsComplete(true);
+    if (!isAdditional) {
+      sessionStorage.setItem("paid", "true");
+      sessionStorage.setItem("questionCount", "10");
+    } else {
+      const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
+      sessionStorage.setItem("questionCount", String(currentCount + 10));
+    }
+    setTimeout(() => navigate("/chat"), 1500);
+  };
+
+  const handlePayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsComplete(true);
-      if (!isAdditional) {
-        // 첫 결제: 정확히 10개로 설정
-        sessionStorage.setItem("paid", "true");
-        sessionStorage.setItem("questionCount", "10");
-      } else {
-        // 추가 결제: 기존 + 10
-        const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
-        sessionStorage.setItem("questionCount", String(currentCount + 10));
+
+    if (isTossApp()) {
+      try {
+        const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const result = await window.TossApp!.requestPayment({
+          productId: PRODUCT_ID,
+          amount: priceAmount,
+          orderId,
+          orderName: isAdditional ? "추가 질문 충전 10회" : "AI 점성술 상세 운세",
+        });
+        if (result.status === "success") {
+          onPaymentSuccess();
+        } else {
+          setIsProcessing(false);
+        }
+      } catch {
+        setIsProcessing(false);
       }
-      setTimeout(() => navigate("/chat"), 1500);
-    }, 2000);
+    } else {
+      // 웹 미리보기: 시뮬레이션
+      setTimeout(() => onPaymentSuccess(), 2000);
+    }
   };
 
   if (isComplete) {

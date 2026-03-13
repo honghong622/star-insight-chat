@@ -6,6 +6,21 @@ const PRODUCT_ID = "ait.0000021328.2e24dd8e.5d5d5e9a16.3407433704";
 
 type PayMethod = "card" | "phone" | "transfer";
 
+declare global {
+  interface Window {
+    TossApp?: {
+      requestPayment: (params: {
+        productId: string;
+        amount: number;
+        orderId: string;
+        orderName: string;
+      }) => Promise<{ status: string }>;
+    };
+  }
+}
+
+const isTossApp = () => !!window.TossApp;
+
 const PaymentPage = () => {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<PayMethod>("card");

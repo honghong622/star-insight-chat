@@ -8,6 +8,7 @@ import ReadingPage from "./pages/ReadingPage";
 import PaymentPage from "./pages/PaymentPage";
 import ChatPage from "./pages/ChatPage";
 import NotFound from "./pages/NotFound";
+import TermsPage from "./pages/TermsPage";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/reading" element={<ReadingPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

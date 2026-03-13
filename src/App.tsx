@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ReadingPage from "./pages/ReadingPage";
 import PaymentPage from "./pages/PaymentPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentFailPage from "./pages/PaymentFailPage";
 import ChatPage from "./pages/ChatPage";
 import NotFound from "./pages/NotFound";
 import TermsPage from "./pages/TermsPage";
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/reading" element={<ReadingPage />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/payment/success" element={<PaymentSuccessPage />} />
+          <Route path="/payment/fail" element={<PaymentFailPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="*" element={<NotFound />} />

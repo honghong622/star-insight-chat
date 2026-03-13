@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CreditCard, Smartphone, Building2, Check, Shield } from "lucide-react";
 
+const PRODUCT_ID = "ait.0000021328.2e24dd8e.5d5d5e9a16.3407433704";
+
 type PayMethod = "card" | "phone" | "transfer";
 
 const PaymentPage = () => {

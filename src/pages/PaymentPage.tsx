@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CreditCard, Smartphone, Building2, Check, Shield } from "lucide-react";
+import { ArrowLeft, CreditCard, Shield } from "lucide-react";
 
-const PRODUCT_ID = "ait.0000021328.2e24dd8e.5d5d5e9a16.3407433704";
-
-type PayMethod = "card" | "phone" | "transfer";
+const TOSS_CLIENT_KEY = "test_ck_DnyRpQWGrNzqy5vNxxQLrKwv1M9E";
 
 declare global {
   interface Window {
+    TossPayments?: (clientKey: string) => {
+      payment: (options: { customerKey: string }) => {
+        requestPayment: (params: {
+          method: string;
+          amount: { value: number; currency: string };
+          orderId: string;
+          orderName: string;
+          successUrl: string;
+          failUrl: string;
+        }) => Promise<void>;
+      };
+    };
     TossApp?: {
       requestPayment: (params: {
         productId: string;
@@ -19,17 +29,17 @@ declare global {
   }
 }
 
+const PRODUCT_ID = "ait.0000021328.2e24dd8e.5d5d5e9a16.3407433704";
 const isTossApp = () => !!window.TossApp;
 
 const PaymentPage = () => {
   const navigate = useNavigate();
-  const [selectedMethod, setSelectedMethod] = useState<PayMethod>("card");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
 
   const birthDate = sessionStorage.getItem("birthDate") || "";
   const hasPaid = sessionStorage.getItem("paid") === "true";
   const isAdditional = hasPaid;
+  const priceAmount = isAdditional ? 1980 : 2980;
   const priceLabel = isAdditional ? "1,980원" : "2,980원";
 
   if (!birthDate) {
@@ -37,64 +47,65 @@ const PaymentPage = () => {
     return null;
   }
 
-  const priceAmount = isAdditional ? 1980 : 2980;
-
-  const onPaymentSuccess = () => {
-    setIsProcessing(false);
-    setIsComplete(true);
-    if (!isAdditional) {
-      sessionStorage.setItem("paid", "true");
-      sessionStorage.setItem("questionCount", "10");
-    } else {
-      const currentCount = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
-      sessionStorage.setItem("questionCount", String(currentCount + 10));
-    }
-    setTimeout(() => navigate("/chat"), 1500);
-  };
-
   const handlePayment = async () => {
     setIsProcessing(true);
 
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const orderName = isAdditional ? "추가 질문 충전 10회" : "AI 점성술 상세 운세";
+
+    // 토스 인앱 환경
     if (isTossApp()) {
       try {
-        const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
         const result = await window.TossApp!.requestPayment({
           productId: PRODUCT_ID,
           amount: priceAmount,
           orderId,
-          orderName: isAdditional ? "추가 질문 충전 10회" : "AI 점성술 상세 운세",
+          orderName,
         });
         if (result.status === "success") {
-          onPaymentSuccess();
+          if (!isAdditional) {
+            sessionStorage.setItem("paid", "true");
+            sessionStorage.setItem("questionCount", "10");
+          } else {
+            const c = parseInt(sessionStorage.getItem("questionCount") || "0", 10);
+            sessionStorage.setItem("questionCount", String(c + 10));
+          }
+          navigate("/chat");
         } else {
           setIsProcessing(false);
         }
       } catch {
         setIsProcessing(false);
       }
-    } else {
-      // 웹 미리보기: 시뮬레이션
-      setTimeout(() => onPaymentSuccess(), 2000);
+      return;
+    }
+
+    // 토스페이먼츠 SDK
+    if (!window.TossPayments) {
+      console.error("TossPayments SDK not loaded");
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const tossPayments = window.TossPayments(TOSS_CLIENT_KEY);
+      const customerKey = `customer_${Date.now()}`;
+      const payment = tossPayments.payment({ customerKey });
+
+      const baseUrl = window.location.origin;
+
+      await payment.requestPayment({
+        method: "카드",
+        amount: { value: priceAmount, currency: "KRW" },
+        orderId,
+        orderName,
+        successUrl: `${baseUrl}/payment/success`,
+        failUrl: `${baseUrl}/payment/fail`,
+      });
+    } catch {
+      setIsProcessing(false);
     }
   };
-
-  if (isComplete) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5">
-        <div className="animate-scale-in flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-          <Check className="h-10 w-10 text-primary" />
-        </div>
-        <p className="mt-6 text-xl font-bold text-foreground">결제가 완료되었어요</p>
-        <p className="mt-2 text-sm text-muted-foreground">질문 10회가 충전되었습니다 ✨</p>
-      </div>
-    );
-  }
-
-  const methods: { id: PayMethod; label: string; icon: React.ReactNode; desc: string }[] = [
-    { id: "card", label: "카드 결제", icon: <CreditCard className="h-5 w-5" />, desc: "신용·체크카드" },
-    { id: "phone", label: "휴대폰 결제", icon: <Smartphone className="h-5 w-5" />, desc: "통신사 결제" },
-    { id: "transfer", label: "계좌이체", icon: <Building2 className="h-5 w-5" />, desc: "실시간 이체" },
-  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -125,54 +136,22 @@ const PaymentPage = () => {
         </div>
       </section>
 
-      {/* 결제 수단 */}
+      {/* 결제 수단 안내 */}
       <section className="flex-1 px-5 py-5">
-        <p className="mb-3 text-sm font-bold text-foreground">결제 수단</p>
-        <div className="space-y-2.5">
-          {methods.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setSelectedMethod(m.id)}
-              className={`flex w-full items-center gap-3.5 rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                selectedMethod === m.id
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-card"
-              }`}
-            >
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-xl ${
-                  selectedMethod === m.id
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {m.icon}
-              </div>
-              <div className="flex-1">
-                <p className="text-[15px] font-semibold text-foreground">{m.label}</p>
-                <p className="text-xs text-muted-foreground">{m.desc}</p>
-              </div>
-              <div
-                className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
-                  selectedMethod === m.id
-                    ? "border-primary bg-primary"
-                    : "border-border"
-                }`}
-              >
-                {selectedMethod === m.id && (
-                  <Check className="h-3.5 w-3.5 text-primary-foreground" />
-                )}
-              </div>
-            </button>
-          ))}
+        <div className="flex items-center gap-3 rounded-2xl border-2 border-primary bg-primary/5 px-4 py-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <CreditCard className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-[15px] font-semibold text-foreground">토스페이먼츠</p>
+            <p className="text-xs text-muted-foreground">카드 · 간편결제 · 계좌이체 등</p>
+          </div>
         </div>
 
-        {/* 안내 */}
         <div className="mt-6 flex items-start gap-2 rounded-xl bg-muted/50 px-4 py-3">
           <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
           <p className="text-xs leading-relaxed text-muted-foreground">
-            결제 정보는 안전하게 암호화되어 처리됩니다.
-            개인정보는 결제 목적으로만 사용되며, 제3자에게 제공되지 않습니다.
+            결제 정보는 토스페이먼츠를 통해 안전하게 암호화 처리됩니다.
           </p>
         </div>
       </section>

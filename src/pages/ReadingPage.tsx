@@ -17,6 +17,8 @@ const ReadingPage = () => {
       navigate("/");
       return;
     }
+    // 첫 결제 플로우이므로 기존 채팅 내역 초기화
+    sessionStorage.removeItem("chatMessages");
     fetchReading();
   }, []);
 

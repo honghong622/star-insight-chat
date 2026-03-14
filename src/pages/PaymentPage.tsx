@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CreditCard, Shield } from "lucide-react";
 
-const TOSS_CLIENT_KEY = "test_ck_DnyRpQWGrNzqy5vNxxQLrKwv1M9E";
+const TOSS_CLIENT_KEY = "test_ck_Ba5PzR0ArnW6l2pMdgma8vmYnNeD";
 
 declare global {
   interface Window {

@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ait:build": "npx ait build",
-    "ait:dev": "npx ait dev"
+    "ait:build": "node scripts/run-ait.mjs build",
+    "ait:dev": "node scripts/run-ait.mjs dev"
   },
   "dependencies": {
     "@apps-in-toss/web-framework": "^2.0.7",

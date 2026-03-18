@@ -24,8 +24,26 @@
     <script src="https://js.tosspayments.com/v2/standard"></script>
   </head>
 
-  <body>
-    <div id="root"></div>
+  <body style="margin:0;background:#fff;">
+    <div id="root">
+      <!-- 인라인 로딩 UI: JS 번들 로드 전에도 표시됨 -->
+      <div id="initial-loader" style="display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;">
+        <div style="text-align:center;">
+          <div style="width:40px;height:40px;border:4px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+          <p style="font-size:14px;color:#6b7280;font-weight:500;">로딩 중...</p>
+        </div>
+      </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // 번들 로드 실패 시 10초 후 에러 메시지 표시
+      setTimeout(function(){
+        var loader = document.getElementById('initial-loader');
+        if(loader){
+          loader.innerHTML='<div style="text-align:center;padding:20px;"><p style="font-size:16px;font-weight:700;color:#111;margin-bottom:8px;">앗, 로딩에 실패했어요</p><p style="font-size:13px;color:#6b7280;margin-bottom:20px;">네트워크 상태를 확인해주세요</p><button onclick="location.reload()" style="background:#6366f1;color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">다시 시도</button></div>';
+        }
+      },10000);
+    </script>
   </body>
 </html>

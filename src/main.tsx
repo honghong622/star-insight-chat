@@ -16,7 +16,6 @@ if (root) {
     </ErrorBoundary>
   );
 } else {
-  // AIT 환경에서 root가 없을 경우 대비
   document.body.innerHTML = '<div id="root"></div>';
   createRoot(document.getElementById("root")!).render(
     <ErrorBoundary>

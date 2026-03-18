@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "ait:build": "npx granite build",
+    "ait:dev": "npx granite dev"
   },
   "dependencies": {
     "@apps-in-toss/web-framework": "^2.0.7",

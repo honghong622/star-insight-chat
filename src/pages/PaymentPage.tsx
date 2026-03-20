@@ -15,6 +15,8 @@ declare global {
           orderName: string;
           successUrl: string;
           failUrl: string;
+          flowMode?: "DEFAULT" | "DIRECT";
+          easyPay?: "TOSSPAY";
         }) => Promise<void>;
       };
     };

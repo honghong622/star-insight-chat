@@ -95,7 +95,7 @@ const PaymentPage = () => {
       const baseUrl = window.location.origin;
 
       await payment.requestPayment({
-        method: "카드",
+        method: "CARD",
         amount: { value: priceAmount, currency: "KRW" },
         orderId,
         orderName,

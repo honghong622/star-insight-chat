@@ -38,7 +38,8 @@ const PaymentPage = () => {
 
   const birthDate = sessionStorage.getItem("birthDate") || "";
   const hasPaid = sessionStorage.getItem("paid") === "true";
-  const isAdditional = hasPaid;
+  const hasQuestions = parseInt(sessionStorage.getItem("questionCount") || "0", 10) > 0;
+  const isAdditional = hasPaid && hasQuestions;
   const priceAmount = isAdditional ? 1980 : 2980;
   const priceLabel = isAdditional ? "1,980원" : "2,980원";
 

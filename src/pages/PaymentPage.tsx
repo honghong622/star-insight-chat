@@ -15,6 +15,8 @@ declare global {
           orderName: string;
           successUrl: string;
           failUrl: string;
+          flowMode?: "DEFAULT" | "DIRECT";
+          easyPay?: "TOSSPAY";
         }) => Promise<void>;
       };
     };
@@ -96,12 +98,14 @@ const PaymentPage = () => {
       const baseUrl = window.location.origin;
 
       await payment.requestPayment({
-        method: "TOSSPAY",
+        method: "CARD",
         amount: { value: priceAmount, currency: "KRW" },
         orderId,
         orderName,
         successUrl: `${baseUrl}/payment/success`,
         failUrl: `${baseUrl}/payment/fail`,
+        flowMode: "DIRECT",
+        easyPay: "TOSSPAY",
       });
     } catch {
       setIsProcessing(false);

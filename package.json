@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "granite dev",
-    "build": "granite build",
+    "dev": "vite",
+    "build": "vite build",
+    "build:ait": "ait build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",

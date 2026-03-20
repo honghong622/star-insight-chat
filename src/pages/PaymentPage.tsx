@@ -96,7 +96,7 @@ const PaymentPage = () => {
       const baseUrl = window.location.origin;
 
       await payment.requestPayment({
-        method: "CARD",
+        method: "TOSSPAY",
         amount: { value: priceAmount, currency: "KRW" },
         orderId,
         orderName,
